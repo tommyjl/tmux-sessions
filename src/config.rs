@@ -10,7 +10,15 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SessionConfig {
     pub name: String,
-    pub windows: Vec<String>,
+    pub windows: Vec<WindowConfig>,
+}
+
+// TODO: build from String, see https://serde.rs/string-or-struct.html
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct WindowConfig {
+    pub name: Option<String>,
+    pub working_dir: Option<String>,
+    pub cmd: String,
 }
 
 pub fn get_config(name: &str) -> Result<SessionConfig> {

@@ -32,9 +32,9 @@ fn start(opts: StartOpts) -> Result<()> {
         let mut session = Session::new(&opts.name)?;
         for window in session_config.windows {
             let window = Window {
-                name: window.to_string(),
-                working_dir: "~".to_string(),
-                cmd: window.to_string(),
+                name: window.name,
+                working_dir: window.working_dir,
+                cmd: window.cmd,
             };
             session = session.new_window(window)?;
         }

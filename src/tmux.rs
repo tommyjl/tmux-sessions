@@ -16,8 +16,8 @@ pub struct Session {
 }
 
 pub struct Window {
-    pub name: String,
-    pub working_dir: String,
+    pub name: Option<String>,
+    pub working_dir: Option<String>,
     pub cmd: String,
 }
 
@@ -46,17 +46,19 @@ impl Session {
     }
 
     pub fn new_window(self, window: Window) -> Result<Session> {
-        Command::new("tmux")
-            .arg("new-window")
-            .arg("-t")
-            .arg(&self.name)
-            .arg("-n")
-            .arg(window.name)
-            .arg("-c")
-            .arg(window.working_dir)
-            .arg(window.cmd)
-            .spawn()?
-            .wait()?;
+        let mut cmd = Command::new("tmux");
+        cmd.arg("new-window").arg("-t").arg(&self.name);
+
+        if let Some(name) = window.name {
+            cmd.arg("-n").arg(name);
+        }
+
+        if let Some(cwd) = window.working_dir {
+            let cwd = shellexpand::tilde(&cwd).to_string();
+            cmd.arg("-c").arg(cwd);
+        }
+
+        cmd.arg(window.cmd).spawn()?.wait()?;
         Ok(self)
     }
 }
