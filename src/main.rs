@@ -14,17 +14,17 @@ struct TmuxSessionsOpts {
 
 #[derive(Clap)]
 enum Command {
-    Start(StartOpts),
-    Stop(StopOpts),
-    Restart(RestartOpts),
+    Start(CommandOpts),
+    Stop(CommandOpts),
+    Restart(CommandOpts),
 }
 
 #[derive(Clap)]
-struct StartOpts {
+struct CommandOpts {
     name: String,
 }
 
-fn start(opts: StartOpts) -> Result<()> {
+fn start(opts: &CommandOpts) -> Result<()> {
     if list_sessions()?.contains(&opts.name) {
         Err(anyhow!("Session '{}' already exists", &opts.name))
     } else {
@@ -42,12 +42,7 @@ fn start(opts: StartOpts) -> Result<()> {
     }
 }
 
-#[derive(Clap)]
-struct StopOpts {
-    name: String,
-}
-
-fn stop(opts: StopOpts) -> Result<()> {
+fn stop(opts: &CommandOpts) -> Result<()> {
     if !crate::tmux::list_sessions()?.contains(&opts.name) {
         Err(anyhow!("Session '{}' does not exist", &opts.name))
     } else {
@@ -57,25 +52,16 @@ fn stop(opts: StopOpts) -> Result<()> {
     }
 }
 
-#[derive(Clap)]
-struct RestartOpts {
-    name: String,
-}
-
-fn restart(opts: RestartOpts) -> Result<()> {
-    if !crate::tmux::list_sessions()?.contains(&opts.name) {
-        Err(anyhow!("Session '{}' does not exist", &opts.name))
-    } else {
-        Session::new(&opts.name)?.kill()?;
-        Session::new(&opts.name)?;
-        Ok(())
-    }
+fn restart(opts: &CommandOpts) -> Result<()> {
+    stop(opts)?;
+    start(opts)?;
+    Ok(())
 }
 
 fn main() -> Result<()> {
     match TmuxSessionsOpts::parse().subcmd {
-        Command::Start(opts) => start(opts),
-        Command::Stop(opts) => stop(opts),
-        Command::Restart(opts) => restart(opts),
+        Command::Start(opts) => start(&opts),
+        Command::Stop(opts) => stop(&opts),
+        Command::Restart(opts) => restart(&opts),
     }
 }
