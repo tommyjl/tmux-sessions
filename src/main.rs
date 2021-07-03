@@ -2,11 +2,12 @@ mod config;
 mod tmux;
 
 use anyhow::{anyhow, Result};
-use clap::Clap;
+use clap::{crate_authors, crate_version, Clap};
 use config::get_config;
 use tmux::{list_sessions, Session, Window};
 
 #[derive(Clap)]
+#[clap(version = crate_version!(), author = crate_authors!())]
 struct TmuxSessionsOpts {
     #[clap(subcommand)]
     subcmd: Command,
