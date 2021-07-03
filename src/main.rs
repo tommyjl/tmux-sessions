@@ -21,6 +21,8 @@ enum Command {
 
 #[derive(Clap)]
 struct CommandOpts {
+    #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
+    config: String,
     name: String,
 }
 
@@ -28,7 +30,7 @@ fn start(opts: &CommandOpts) -> Result<()> {
     if list_sessions()?.contains(&opts.name) {
         Err(anyhow!("Session '{}' already exists", &opts.name))
     } else {
-        let session_config = get_config(&opts.name)?;
+        let session_config = get_config(&opts.config, &opts.name)?;
         let mut session = Session::new(&opts.name)?;
         for window in session_config.windows {
             let window = Window {

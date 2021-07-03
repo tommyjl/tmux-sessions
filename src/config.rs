@@ -21,8 +21,9 @@ pub struct WindowConfig {
     pub cmd: String,
 }
 
-pub fn get_config(name: &str) -> Result<SessionConfig> {
-    let config = fs::read_to_string("example.toml")?; // TODO: Get from ~/.config/tsesh/tsesh.toml
+pub fn get_config(config_path: &str, name: &str) -> Result<SessionConfig> {
+    let config_path: &str = &shellexpand::tilde(config_path);
+    let config = fs::read_to_string(config_path)?;
     let config: Config = toml::from_str(&config)?;
 
     config
