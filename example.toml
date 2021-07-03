@@ -1,0 +1,6 @@
+[[sessions]]
+name = "foo"
+windows = [
+    "top",
+    "tail -f ~/.zshrc",
+]

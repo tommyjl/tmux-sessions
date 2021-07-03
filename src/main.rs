@@ -1,8 +1,10 @@
+mod config;
 mod tmux;
 
 use anyhow::{anyhow, Result};
 use clap::Clap;
-use tmux::Session;
+use config::get_config;
+use tmux::{list_sessions, Session, Window};
 
 #[derive(Clap)]
 struct TmuxSessionsOpts {
@@ -23,10 +25,19 @@ struct StartOpts {
 }
 
 fn start(opts: StartOpts) -> Result<()> {
-    if crate::tmux::list_sessions()?.contains(&opts.name) {
+    if list_sessions()?.contains(&opts.name) {
         Err(anyhow!("Session '{}' already exists", &opts.name))
     } else {
-        Session::new(&opts.name)?;
+        let session_config = get_config(&opts.name)?;
+        let mut session = Session::new(&opts.name)?;
+        for window in session_config.windows {
+            let window = Window {
+                name: window.to_string(),
+                working_dir: "~".to_string(),
+                cmd: window.to_string(),
+            };
+            session = session.new_window(window)?;
+        }
         Ok(())
     }
 }
@@ -62,9 +73,7 @@ fn restart(opts: RestartOpts) -> Result<()> {
 }
 
 fn main() -> Result<()> {
-    let opts: TmuxSessionsOpts = TmuxSessionsOpts::parse();
-
-    match opts.subcmd {
+    match TmuxSessionsOpts::parse().subcmd {
         Command::Start(opts) => start(opts),
         Command::Stop(opts) => stop(opts),
         Command::Restart(opts) => restart(opts),
