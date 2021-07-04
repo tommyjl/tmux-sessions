@@ -45,7 +45,9 @@ impl Session {
         Ok(self)
     }
 
-    pub fn new_window(self, window: Window) -> Result<Session> {
+    pub fn new_window(self, window: impl Into<Window>) -> Result<Session> {
+        let window = window.into();
+
         let mut cmd = Command::new("tmux");
         cmd.arg("new-window").arg("-t").arg(&self.name);
 

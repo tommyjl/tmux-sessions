@@ -1,7 +1,7 @@
 [[sessions]]
 name = "foo"
 windows = [
-    { cmd = "top" },
+    "top",
     { name = "logs", cmd = "tail -f ~/.zshrc" },
     { name = "watch_dirs", working_dir = "~/Documents", cmd = "watch -n 5 ls" },
 ]

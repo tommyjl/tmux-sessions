@@ -1,3 +1,4 @@
+use crate::tmux::Window;
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -15,10 +16,35 @@ pub struct SessionConfig {
 
 // TODO: build from String, see https://serde.rs/string-or-struct.html
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct WindowConfig {
-    pub name: Option<String>,
-    pub working_dir: Option<String>,
-    pub cmd: String,
+#[serde(untagged)]
+pub enum WindowConfig {
+    Simple(String),
+    Detailed {
+        name: Option<String>,
+        working_dir: Option<String>,
+        cmd: String,
+    },
+}
+
+impl Into<Window> for WindowConfig {
+    fn into(self) -> Window {
+        match self {
+            WindowConfig::Simple(cmd) => Window {
+                name: None,
+                working_dir: None,
+                cmd,
+            },
+            WindowConfig::Detailed {
+                name,
+                working_dir,
+                cmd,
+            } => Window {
+                name,
+                working_dir,
+                cmd,
+            },
+        }
+    }
 }
 
 pub fn get_config(config_path: &str, name: &str) -> Result<SessionConfig> {

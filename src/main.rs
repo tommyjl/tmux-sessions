@@ -4,7 +4,7 @@ mod tmux;
 use anyhow::{anyhow, Result};
 use clap::{crate_authors, crate_version, Clap};
 use config::get_config;
-use tmux::{list_sessions, Session, Window};
+use tmux::{list_sessions, Session};
 
 #[derive(Clap)]
 #[clap(version = crate_version!(), author = crate_authors!())]
@@ -34,11 +34,6 @@ fn start(opts: &CommandOpts) -> Result<()> {
         let session_config = get_config(&opts.config, &opts.name)?;
         let mut session = Session::new(&opts.name)?;
         for window in session_config.windows {
-            let window = Window {
-                name: window.name,
-                working_dir: window.working_dir,
-                cmd: window.cmd,
-            };
             session = session.new_window(window)?;
         }
         Ok(())
