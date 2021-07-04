@@ -15,24 +15,27 @@ struct TmuxSessionsOpts {
 
 #[derive(Clap)]
 enum Command {
-    Start(CommandOpts),
-    Stop(CommandOpts),
-    Restart(CommandOpts),
+    Start {
+        #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
+        config: String,
+        name: String,
+    },
+    Stop {
+        name: String,
+    },
+    Restart {
+        #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
+        config: String,
+        name: String,
+    },
 }
 
-#[derive(Clap)]
-struct CommandOpts {
-    #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
-    config: String,
-    name: String,
-}
-
-fn start(opts: &CommandOpts) -> Result<()> {
-    if list_sessions()?.contains(&opts.name) {
-        Err(anyhow!("Session '{}' already exists", &opts.name))
+fn start(config: String, name: String) -> Result<()> {
+    if list_sessions()?.contains(&name) {
+        Err(anyhow!("Session '{}' already exists", name))
     } else {
-        let session_config = get_config(&opts.config, &opts.name)?;
-        let mut session = Session::new(&opts.name)?;
+        let session_config = get_config(&config, &name)?;
+        let mut session = Session::new(&name)?;
         for window in session_config.windows {
             session = session.new_window(window)?;
         }
@@ -40,26 +43,26 @@ fn start(opts: &CommandOpts) -> Result<()> {
     }
 }
 
-fn stop(opts: &CommandOpts) -> Result<()> {
-    if !crate::tmux::list_sessions()?.contains(&opts.name) {
-        Err(anyhow!("Session '{}' does not exist", &opts.name))
+fn stop(name: String) -> Result<()> {
+    if !crate::tmux::list_sessions()?.contains(&name) {
+        Err(anyhow!("Session '{}' does not exist", &name))
     } else {
-        let session = Session::new(&opts.name)?;
+        let session = Session::new(&name)?;
         session.kill()?;
         Ok(())
     }
 }
 
-fn restart(opts: &CommandOpts) -> Result<()> {
-    stop(opts)?;
-    start(opts)?;
+fn restart(config: String, name: String) -> Result<()> {
+    stop(name.clone())?;
+    start(config, name)?;
     Ok(())
 }
 
 fn main() -> Result<()> {
     match TmuxSessionsOpts::parse().subcmd {
-        Command::Start(opts) => start(&opts),
-        Command::Stop(opts) => stop(&opts),
-        Command::Restart(opts) => restart(&opts),
+        Command::Start { config, name } => start(config, name),
+        Command::Stop { name } => stop(name),
+        Command::Restart { config, name } => restart(config, name),
     }
 }
