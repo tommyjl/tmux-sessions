@@ -1,12 +1,8 @@
 [package]
-name = "tmux-sessions"
+name = "tsesh"
 authors = ["Tommy Joe Lund <tomlun92@gmail.com>"]
 version = "0.1.2"
 edition = "2018"
-
-[[bin]]
-name = "tsesh"
-path = "src/main.rs"
 
 [dependencies]
 anyhow = "1.0.41"
