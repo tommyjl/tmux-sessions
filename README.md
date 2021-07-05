@@ -2,6 +2,11 @@
 
 A command-line tool for managing sessions in tmux
 
+## Installation
+
+1. With homebrew: `brew install tommyjl/formulae/tsesh`
+2. With cargo: `cargo install tsesh`
+
 ## Usage
 
 1. Create a config file at `~/.config/tsesh/config.toml`. See [example.toml](./example.toml) for details.
