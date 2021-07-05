@@ -1,7 +1,14 @@
 [package]
 name = "tsesh"
-authors = ["Tommy Joe Lund <tomlun92@gmail.com>"]
 version = "0.1.2"
+authors = ["Tommy Joe Lund <tomlun92@gmail.com>"]
+description = """
+A command-line tool for managing sessions in tmux
+"""
+categories = ["command-line-utilities"]
+homepage = "https://github.com/tommyjl/tmux-sessions"
+repository = "https://github.com/tommyjl/tmux-sessions"
+license = "MIT"
 edition = "2018"
 
 [dependencies]
