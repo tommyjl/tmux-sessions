@@ -18,15 +18,15 @@ enum Command {
     Start {
         #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
         config: String,
-        name: String,
+        names: Vec<String>,
     },
     Stop {
-        name: String,
+        names: Vec<String>,
     },
     Restart {
         #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
         config: String,
-        name: String,
+        names: Vec<String>,
     },
 }
 
@@ -61,8 +61,14 @@ fn restart(config: String, name: String) -> Result<()> {
 
 fn main() -> Result<()> {
     match TmuxSessionsOpts::parse().subcmd {
-        Command::Start { config, name } => start(config, name),
-        Command::Stop { name } => stop(name),
-        Command::Restart { config, name } => restart(config, name),
+        Command::Start { config, names } => names
+            .into_iter()
+            .map(|name| start(config.clone(), name))
+            .collect(),
+        Command::Stop { names } => names.into_iter().map(stop).collect(),
+        Command::Restart { config, names } => names
+            .into_iter()
+            .map(|name| restart(config.clone(), name))
+            .collect(),
     }
 }
