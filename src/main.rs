@@ -18,14 +18,17 @@ enum Command {
     Start {
         #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
         config: String,
+        #[clap(required = true, min_values = 1)]
         names: Vec<String>,
     },
     Stop {
+        #[clap(required = true, min_values = 1)]
         names: Vec<String>,
     },
     Restart {
         #[clap(short, long, default_value = "~/.config/tsesh/config.toml")]
         config: String,
+        #[clap(required = true, min_values = 1)]
         names: Vec<String>,
     },
 }
