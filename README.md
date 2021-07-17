@@ -1,5 +1,7 @@
 # tmux-sessions
 
+[![build](https://github.com/tommyjl/tmux-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/tommyjl/tmux-sessions/actions/workflows/ci.yml)
+
 A command-line tool for managing sessions in tmux
 
 ## Installation
